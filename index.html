@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>G3 Golf Sims | Custom Golf Simulators</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --charcoal: #08110d;
+      --deep-green: #0f2a1d;
+      --green: #1f5f3b;
+      --cream: #f7f3ea;
+      --gold: #c8a24a;
+      --soft-gold: #ead79a;
+      --white: #ffffff;
+      --text: #17211b;
+      --muted: #66736b;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+
+    .top-bar {
+      background: var(--charcoal);
+      color: rgba(255, 255, 255, 0.85);
+      padding: 10px 6%;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(8, 17, 13, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(200, 162, 74, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 6%;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .brand-logo {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--white);
+      object-fit: contain;
+      padding: 5px;
+    }
+
+    .brand-text {
+      font-family: 'Cinzel', serif;
+      letter-spacing: 1px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.86);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .nav-links a:hover { color: var(--soft-gold); }
+
+    .nav-button,
+    .button-primary,
+    .button-secondary {
+      text-decoration: none;
+      border-radius: 999px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-button {
+      background: linear-gradient(135deg, var(--gold), var(--soft-gold));
+      color: var(--charcoal) !important;
+      padding: 11px 18px;
+    }
+
+    .hero {
+      min-height: 760px;
+      position: relative;
+      background:
+        linear-gradient(90deg, rgba(8, 17, 13, 0.96) 0%, rgba(8, 17, 13, 0.84) 45%, rgba(8, 17, 13, 0.35) 100%),
+        url('IMG_8063 3.jpg') center/cover no-repeat;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      padding: 90px 6%;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 130px;
+      background: linear-gradient(to bottom, transparent, var(--cream));
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      color: var(--soft-gold);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(46px, 7vw, 84px);
+      line-height: 0.98;
+      margin: 0 0 22px;
+      letter-spacing: 1px;
+    }
+
+    .hero p {
+      font-size: clamp(18px, 2vw, 23px);
+      color: rgba(255, 255, 255, 0.88);
+      margin: 0 0 32px;
+      max-width: 650px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .button-primary {
+      background: linear-gradient(135deg, var(--gold), var(--soft-gold));
+      color: var(--charcoal);
+      padding: 15px 24px;
+      box-shadow: 0 18px 34px rgba(200, 162, 74, 0.28);
+    }
+
+    .button-secondary {
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      padding: 14px 24px;
+    }
+
+    .button-primary:hover,
+    .button-secondary:hover,
+    .nav-button:hover { transform: translateY(-2px); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 52px;
+      max-width: 720px;
+    }
+
+    .stat-card {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      border-radius: 22px;
+      padding: 22px;
+    }
+
+    .stat-card strong {
+      display: block;
+      color: var(--soft-gold);
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .stat-card span {
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 14px;
+    }
+
+    section { padding: 92px 6%; }
+
+    .section-header {
+      max-width: 760px;
+      margin-bottom: 42px;
+    }
+
+    .section-header h2 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(34px, 4vw, 52px);
+      margin: 0 0 14px;
+      color: var(--deep-green);
+      line-height: 1.05;
+    }
+
+    .section-header p {
+      color: var(--muted);
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 42px;
+      align-items: center;
+    }
+
+    .premium-card {
+      background: var(--white);
+      border: 1px solid rgba(15, 42, 29, 0.1);
+      border-radius: 30px;
+      padding: 36px;
+      box-shadow: 0 18px 40px rgba(8, 17, 13, 0.08);
+    }
+
+    .premium-card h3 {
+      margin-top: 0;
+      color: var(--deep-green);
+      font-size: 25px;
+    }
+
+    .check-list {
+      list-style: none;
+      padding: 0;
+      margin: 24px 0 0;
+      display: grid;
+      gap: 14px;
+    }
+
+    .check-list li {
+      display: flex;
+      gap: 12px;
+      color: #26342c;
+      font-weight: 600;
+    }
+
+    .check-list li::before {
+      content: '•';
+      color: var(--gold);
+      font-size: 28px;
+      line-height: 20px;
+    }
+
+    .image-feature {
+      border-radius: 34px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 8px solid var(--white);
+      background: var(--deep-green);
+    }
+
+    .image-feature img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+    }
+
+    .packages {
+      background: linear-gradient(135deg, var(--deep-green), var(--charcoal));
+      color: var(--white);
+    }
+
+    .packages .section-header h2,
+    .packages .section-header p { color: var(--white); }
+
+    .package-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .package-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(234, 215, 154, 0.24);
+      border-radius: 28px;
+      padding: 30px;
+      min-height: 320px;
+    }
+
+    .package-card.featured {
+      background: rgba(234, 215, 154, 0.13);
+      border-color: var(--gold);
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .package-card h3 {
+      font-size: 25px;
+      margin: 0 0 12px;
+      color: var(--soft-gold);
+    }
+
+    .package-card p {
+      color: rgba(255, 255, 255, 0.82);
+      margin-bottom: 24px;
+    }
+
+    .package-card ul {
+      padding-left: 18px;
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+    }
+
+    .gallery-main,
+    .gallery-side {
+      display: grid;
+      gap: 24px;
+    }
+
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      box-shadow: 0 18px 40px rgba(8, 17, 13, 0.12);
+      background: var(--deep-green);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      min-height: 260px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .gallery-item:hover img { transform: scale(1.04); }
+
+    .gallery-label {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      right: 18px;
+      background: rgba(8, 17, 13, 0.78);
+      color: var(--white);
+      border: 1px solid rgba(234, 215, 154, 0.35);
+      border-radius: 18px;
+      padding: 14px 16px;
+      font-weight: 700;
+    }
+
+    .contact {
+      background:
+        radial-gradient(circle at top right, rgba(200, 162, 74, 0.2), transparent 34%),
+        var(--cream);
+    }
+
+    .contact-card {
+      background: var(--white);
+      border-radius: 34px;
+      padding: 44px;
+      box-shadow: 0 24px 55px rgba(8, 17, 13, 0.12);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      align-items: center;
+      border: 1px solid rgba(15, 42, 29, 0.1);
+    }
+
+    .contact-card h2 {
+      font-family: 'Cinzel', serif;
+      color: var(--deep-green);
+      font-size: clamp(32px, 4vw, 48px);
+      line-height: 1.05;
+      margin: 0 0 16px;
+    }
+
+    .contact-links {
+      display: grid;
+      gap: 16px;
+    }
+
+    .contact-links a {
+      background: #f4f0e6;
+      border: 1px solid rgba(200, 162, 74, 0.28);
+      border-radius: 20px;
+      padding: 18px;
+      text-decoration: none;
+      font-weight: 800;
+      color: var(--deep-green);
+    }
+
+    footer {
+      background: var(--charcoal);
+      color: rgba(255, 255, 255, 0.72);
+      padding: 34px 6%;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(200, 162, 74, 0.32);
+    }
+
+    footer strong { color: var(--soft-gold); }
+
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+
+      .hero {
+        min-height: 680px;
+        background:
+          linear-gradient(180deg, rgba(8, 17, 13, 0.96) 0%, rgba(8, 17, 13, 0.76) 100%),
+          url('IMG_8063 3.jpg') center/cover no-repeat;
+      }
+
+      .stats,
+      .intro-grid,
+      .package-grid,
+      .gallery-grid,
+      .contact-card { grid-template-columns: 1fr; }
+
+      .package-card { min-height: auto; }
+    }
+
+    @media (max-width: 560px) {
+      .top-bar { display: none; }
+      .navbar { padding: 14px 5%; }
+      .brand-logo { width: 48px; height: 48px; }
+      .brand-text { font-size: 18px; }
+      .hero { padding: 72px 5%; }
+      section { padding: 72px 5%; }
+      .stats { gap: 12px; }
+      .premium-card,
+      .contact-card { padding: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <span>Custom golf simulator design and installation</span>
+    <span>Myrtle Beach, SC | g3golfsims@gmail.com | (843) 481-0856</span>
+  </div>
+
+  <nav class="navbar">
+    <a class="brand" href="#home" aria-label="G3 Golf Sims Home">
+      <img class="brand-logo" src="73431421840__2147925E-B3AB-427D-B624-36F53BFE2D0E.jpg" alt="G3 Golf Sims logo" />
+      <span class="brand-text">G3 Golf Sims</span>
+    </a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#packages">Packages</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#contact" class="nav-button">Request a Quote</a>
+    </div>
+  </nav>
+
+  <main id="home">
+    <section class="hero">
+      <div class="hero-content">
+        <span class="eyebrow">Luxury Indoor Golf Experiences</span>
+        <h1>Custom Golf Simulators Built Around Your Game.</h1>
+        <p>G3 Golf Sims designs and installs premium simulator spaces tailored to your room, budget, and skill level — from garage builds to high-end home golf rooms.</p>
+        <div class="hero-actions">
+          <a class="button-primary" href="#contact">Start Your Build</a>
+          <a class="button-secondary" href="#gallery">View Gallery</a>
+        </div>
+        <div class="stats">
+          <div class="stat-card">
+            <strong>Custom</strong>
+            <span>Designed around your exact space</span>
+          </div>
+          <div class="stat-card">
+            <strong>Premium</strong>
+            <span>Clean finishes and quality components</span>
+          </div>
+          <div class="stat-card">
+            <strong>Flexible</strong>
+            <span>Options for most budgets and skill levels</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="intro-grid">
+        <div>
+          <div class="section-header">
+            <span class="eyebrow">About G3 Golf Sims</span>
+            <h2>Bring the country club feel home.</h2>
+            <p>We help golfers create a simulator setup that feels intentional, polished, and built to perform. Every project is planned around your space, your goals, and the way you want to play.</p>
+          </div>
+          <div class="premium-card">
+            <h3>What we focus on</h3>
+            <p>Whether you want a clean practice setup, a full entertainment space, or a premium indoor golf experience, G3 Golf Sims builds around your needs instead of forcing you into a one-size-fits-all package.</p>
+            <ul class="check-list">
+              <li>Custom layouts for garages, homes, barns, and commercial spaces</li>
+              <li>Launch monitor, projector, enclosure, turf, and hitting area planning</li>
+              <li>Budget-conscious options without sacrificing a clean finished look</li>
+              <li>Setup designed for practice, entertainment, and year-round golf</li>
+            </ul>
+          </div>
+        </div>
+        <div class="image-feature">
+          <img src="IMG_8132 2.jpg" alt="Premium G3 Golf Sims simulator installation" />
+        </div>
+      </div>
+    </section>
+
+    <section id="packages" class="packages">
+      <div class="section-header">
+        <span class="eyebrow">Build Options</span>
+        <h2>Simulator packages tailored to your vision.</h2>
+        <p>Every quote is custom, but most builds fall into one of these categories depending on your space, equipment preferences, and finish level.</p>
+      </div>
+
+      <div class="package-grid">
+        <div class="package-card">
+          <h3>Starter Sim</h3>
+          <p>A clean, functional simulator setup for golfers who want to practice at home without overbuilding the space.</p>
+          <ul>
+            <li>Budget-friendly equipment options</li>
+            <li>Simple enclosure and screen setup</li>
+            <li>Great for garages and smaller spaces</li>
+          </ul>
+        </div>
+
+        <div class="package-card featured">
+          <h3>Premium Build</h3>
+          <p>A polished setup with upgraded components, better visuals, and a more finished simulator-room feel.</p>
+          <ul>
+            <li>Upgraded projector and screen options</li>
+            <li>Cleaner turf and hitting area design</li>
+            <li>Designed for performance and appearance</li>
+          </ul>
+        </div>
+
+        <div class="package-card">
+          <h3>Luxury Experience</h3>
+          <p>A high-end indoor golf environment built for entertainment, practice, and a premium look from every angle.</p>
+          <ul>
+            <li>Ambient lighting options</li>
+            <li>Premium finishes and layout planning</li>
+            <li>Great for homes, businesses, and entertainment spaces</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery">
+      <div class="section-header">
+        <span class="eyebrow">Gallery</span>
+        <h2>Recent simulator work.</h2>
+        <p>Use this section to showcase finished builds, progress photos, and before-and-after transformations.</p>
+      </div>
+
+      <div class="gallery-grid">
+        <div class="gallery-main">
+          <div class="gallery-item">
+            <img src="IMG_8063 3.jpg" alt="Luxury basement golf simulator installation" />
+            <div class="gallery-label">Luxury basement simulator with lounge-style entertainment space</div>
+          </div>
+          <div class="gallery-item">
+            <img src="IMG_8644 2.jpg" alt="Garage golf simulator installation" />
+            <div class="gallery-label">Full-width garage simulator with turf, enclosure, and projector setup</div>
+          </div>
+        </div>
+        <div class="gallery-side">
+          <div class="gallery-item">
+            <img src="IMG_8134.jpg" alt="Barn golf simulator installation" />
+            <div class="gallery-label">Custom barn simulator built around an open-beam space</div>
+          </div>
+          <div class="gallery-item">
+            <img src="IMG_8132 2.jpg" alt="Finished golf simulator bay" />
+            <div class="gallery-label">Clean hitting area with projector-mounted simulator bay</div>
+          </div>
+          <div class="gallery-item">
+            <img src="IMG_8062 3.jpg" alt="Golf simulator hitting screen close up" />
+            <div class="gallery-label">Premium screen, turf, and projector alignment detail</div>
+          </div>
+          <div class="gallery-item">
+            <img src="E827CB6E-69B9-40EE-9957-5C0014BA67D2.jpg" alt="Practice net golf simulator build" />
+            <div class="gallery-label">Net-based practice bay for compact indoor spaces</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact">
+      <div class="contact-card">
+        <div>
+          <span class="eyebrow">Request a Quote</span>
+          <h2>Ready to build your golf simulator?</h2>
+          <p>Tell us about your space, budget, and goals. We’ll help you choose the right setup for your game and your room.</p>
+        </div>
+        <div class="contact-links">
+          <a href="mailto:g3golfsims@gmail.com">Email: g3golfsims@gmail.com</a>
+          <a href="tel:+18434810856">Call or Text: (843) 481-0856</a>
+          <a href="mailto:g3golfsims@gmail.com?subject=Golf%20Simulator%20Quote%20Request">Request a Quote by Email</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span><strong>G3 Golf Sims</strong> | Custom Golf Simulators</span>
+    <span>Myrtle Beach, South Carolina</span>
+  </footer>
+</body>
+</html>
