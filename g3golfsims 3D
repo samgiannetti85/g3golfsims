@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Golf Simulator Builder</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #111;
+    }
+
+    header {
+      padding: 30px;
+      background: #111;
+      color: white;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 30px;
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 25px;
+    }
+
+    .panel {
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      background: #111;
+      color: white;
+      cursor: pointer;
+      border: none;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #333;
+    }
+
+    #viewer {
+      height: 600px;
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #222;
+    }
+
+    .recommendation {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 12px;
+      background: #f0f0f0;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 850px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      #viewer {
+        height: 450px;
+      }
+    }
+  </style>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.164.1/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.164.1/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <header>
+    <h1>Custom Golf Simulator Builder</h1>
+    <p>Enter your room size and preview a custom golf simulator setup.</p>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <h2>Build Your Golf Sim</h2>
+
+      <label for="width">Room Width Feet</label>
+      <input id="width" type="number" value="14" min="8" max="30" />
+
+      <label for="depth">Room Depth Feet</label>
+      <input id="depth" type="number" value="18" min="10" max="40" />
+
+      <label for="height">Ceiling Height Feet</label>
+      <input id="height" type="number" value="10" min="7" max="15" />
+
+      <label for="budget">Budget Tier</label>
+      <select id="budget">
+        <option value="starter">Starter Build</option>
+        <option value="mid">Mid-Level Build</option>
+        <option value="premium">Premium Build</option>
+      </select>
+
+      <button onclick="updateBuild()">Update Simulator</button>
+
+      <div class="recommendation" id="recommendation">
+        Enter your room dimensions to see a recommended setup.
+      </div>
+    </section>
+
+    <section class="panel">
+      <div id="viewer"></div>
+    </section>
+  </main>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+    const viewer = document.getElementById("viewer");
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x202020);
+
+    const camera = new THREE.PerspectiveCamera(
+      50,
+      viewer.clientWidth / viewer.clientHeight,
+      0.1,
+      1000
+    );
+
+    camera.position.set(14, 10, 18);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+    viewer.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(10, 15, 10);
+    scene.add(directionalLight);
+
+    let buildGroup = new THREE.Group();
+    scene.add(buildGroup);
+
+    function makeBox(width, height, depth, color, x, y, z) {
+      const geometry = new THREE.BoxGeometry(width, height, depth);
+      const material = new THREE.MeshStandardMaterial({ color });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(x, y, z);
+      buildGroup.add(mesh);
+      return mesh;
+    }
+
+    function makeTransparentBox(width, height, depth, color, x, y, z, opacity) {
+      const geometry = new THREE.BoxGeometry(width, height, depth);
+      const material = new THREE.MeshStandardMaterial({
+        color,
+        transparent: true,
+        opacity
+      });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(x, y, z);
+      buildGroup.add(mesh);
+      return mesh;
+    }
+
+    window.updateBuild = function () {
+      const roomWidth = Number(document.getElementById("width").value);
+      const roomDepth = Number(document.getElementById("depth").value);
+      const roomHeight = Number(document.getElementById("height").value);
+      const budget = document.getElementById("budget").value;
+
+      buildGroup.clear();
+
+      const screenWidth = Math.min(roomWidth - 2, 14);
+      const screenHeight = Math.min(roomHeight - 2, 9);
+      const enclosureDepth = roomDepth >= 18 ? 5 : 4;
+
+      // Floor
+      makeBox(roomWidth, 0.15, roomDepth, 0x444444, 0, 0, 0);
+
+      // Back wall
+      makeTransparentBox(roomWidth, roomHeight, 0.15, 0x777777, 0, roomHeight / 2, -roomDepth / 2, 0.25);
+
+      // Left wall
+      makeTransparentBox(0.15, roomHeight, roomDepth, 0x777777, -roomWidth / 2, roomHeight / 2, 0, 0.18);
+
+      // Right wall
+      makeTransparentBox(0.15, roomHeight, roomDepth, 0x777777, roomWidth / 2, roomHeight / 2, 0, 0.18);
+
+      // Impact screen
+      makeBox(screenWidth, screenHeight, 0.2, 0xffffff, 0, screenHeight / 2, -roomDepth / 2 + 0.3);
+
+      // Enclosure frame
+      makeTransparentBox(screenWidth + 1, screenHeight + 0.8, enclosureDepth, 0x111111, 0, screenHeight / 2, -roomDepth / 2 + enclosureDepth / 2, 0.18);
+
+      // Hitting mat
+      makeBox(5, 0.2, 4, 0x167a35, 0, 0.25, 3);
+
+      // Ball
+      const ballGeometry = new THREE.SphereGeometry(0.18, 32, 32);
+      const ballMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+      const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+      ball.position.set(0, 0.55, 2.2);
+      buildGroup.add(ball);
+
+      // Projector
+      makeBox(1.4, 0.4, 0.9, 0x000000, 0, roomHeight - 1, 1.5);
+
+      // Launch monitor
+      makeBox(0.7, 0.5, 0.4, 0x2222ff, -2.6, 0.45, 2.7);
+
+      let packageText = "";
+
+      if (budget === "starter") {
+        packageText = "Starter Build: Basic enclosure, standard hitting mat, entry-level launch monitor, and simple projector setup.";
+      } else if (budget === "mid") {
+        packageText = "Mid-Level Build: Better impact screen, stronger enclosure, quality hitting mat, short-throw projector, and solid launch monitor.";
+      } else {
+        packageText = "Premium Build: High-end enclosure, premium screen, commercial-grade turf, advanced launch monitor, and luxury finish options.";
+      }
+
+      document.getElementById("recommendation").innerHTML = `
+        <strong>Recommended Setup</strong><br>
+        Screen Size: ${screenWidth.toFixed(1)} ft wide x ${screenHeight.toFixed(1)} ft tall<br>
+        Enclosure Depth: ${enclosureDepth} ft<br>
+        Projector: Short-throw projector recommended<br>
+        Ceiling Height: ${roomHeight >= 9 ? "Good for most swings" : "May be tight for driver swings"}<br><br>
+        ${packageText}
+      `;
+    };
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener("resize", () => {
+      camera.aspect = viewer.clientWidth / viewer.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+    });
+
+    updateBuild();
+    animate();
+  </script>
+</body>
+</html>
