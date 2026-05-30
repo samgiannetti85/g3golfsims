@@ -18,8 +18,35 @@
       --white: #ffffff;
       --text: #17211b;
       --muted: #66736b;
-      --shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
-    }
+     --shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+}
+
+.builder-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 18px;
+  background: #0f2a1d;
+  color: white !important;
+  text-decoration: none;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.builder-button:hover {
+  background: #1f5f3b;
+  color: #ead79a !important;
+}
+  display: inline-block;
+  margin-top: 20px;
+  padding: 14px 24px;
+  background: #0f2a1d;
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -487,6 +514,9 @@
       <a href="#about">About</a>
       <a href="#packages">Packages</a>
       <a href="#gallery">Gallery</a>
+      <a href="golf-sim-builder.html" class="builder-button">
+  Try Our Golf Simulator Builder
+</a>
       <a href="#contact" class="nav-button">Request a Quote</a>
     </div>
   </nav>
